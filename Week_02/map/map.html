@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>map</title>
+    <style>
+        #map{
+            font-size: 0;
+            width: 711px;
+        }
+        .cell {
+            width: 6px;
+            height: 6px;
+            display: inline-block;
+            background-color: gray;
+            line-height: 7px;
+            vertical-align: middle;
+            border-bottom: 1px solid #fff;
+            border-right: 1px solid #fff;
+        }
+        button {
+            border:1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <button onclick="saveMap()">保存</botton>
+    <script>
+        // 取出最小数据的数据结构
+        class Sort{
+            constructor(data,compare){
+                this.data=data || [];
+                this.compare=compare || function(a,b){return a-b};
+            }
+            take(){
+                let min=this.data[0];
+                let minIndex=0;
+                for(let i=1;i<this.data.length;i++){
+                    if(this.compare(min,this.data[i])>0){
+                        min=this.data[i];
+                        minIndex=i;
+                    }
+                }
+                this.data[minIndex]=this.data[this.data.length-1];
+                this.data.pop();
+                return min;
+            }
+            give(item){
+                this.data.push(item);
+            }
+        }
+        
+        // 二叉堆实现取出最小数据的数据结构；
+        // class Sort{
+        //     constructor(data,compare){
+        //         this.data=data || [];
+        //         this.compare=compare || function(a,b){return a-b};
+        //     }
+            
+
+        // }
+        // 将路径保存到localStorage
+        function saveMap(){
+            localStorage.setItem('dots',JSON.stringify(dots));
+        }
+        let mouseDown=false;
+        let clear=false;
+        let dots=localStorage['dots'] ? JSON.parse(localStorage.getItem('dots')) : Array(10000).fill(0);
+        let ele=document.getElementById("map");
+        for(let i=0;i<100;i++){
+                let fragmen=document.createDocumentFragment()
+                for(let j=0;j<100;j++){
+                    let cell=document.createElement('div');
+                    cell.classList.add("cell");
+                    if(dots[100*i+j]===1){
+                        cell.style.backgroundColor="black";
+                    }
+                    cell.addEventListener("mousemove",()=>{
+                        if(mouseDown){
+                            if(clear){
+                                cell.style.backgroundColor="gray";
+                                dots[100*i+j]=0;
+                            }else{
+                                cell.style.backgroundColor="black";
+                                dots[100*i+j]=1;
+                            }
+                        }
+                    })
+                    fragmen.appendChild(cell);
+                }
+                ele.appendChild(fragmen);
+            }    
+        document.addEventListener('mousedown',e=>{
+            mouseDown=true;
+            clear=(e.which===3)
+        })
+        document.addEventListener('mouseup',e=>{
+            mouseDown=false;
+        })
+        document.addEventListener('contextmenu',e=>{e.preventDefault()})
+        function sleep(t){
+            return new Promise(resolve=>{
+                setTimeout(resolve,t);
+            })
+        }
+        // 寻路
+        async function path(map,start,end){
+            let table=Object.create(map);
+            // let queue=[];
+            let queue=new Sort([],(a,b)=>distant(a)-distant(b));
+            queue.give(start);
+            async function insert(x,y,pre){
+                if(x<0 || x>99 || y<0 || y>99) return;
+                let curdist=(table[pre[1]*100+pre[0]].distant || 0)+1;
+                if(table[y*100+x]){
+                    if(table[y*100+x]!==1 && table[y*100+x].distant>curdist){
+                        table[y*100+x]={
+                            point:pre,
+                            distant:curdist
+                        }
+                    }
+                    return;
+                }
+                await sleep(10);             
+                ele.children[y*100+x].style.backgroundColor="lightgreen";
+                map[y*100+x]=2;
+                table[y*100+x]={
+                    point:pre,
+                    distant:curdist,
+                };
+                queue.give([x,y]);
+            }
+            // 与终点距离比较
+            function distant(point){
+                return (point[0]-end[0])**2+(point[1]-end[1])**2;
+            }
+            // 与起点的距离
+            function distantStart(point){
+                return (point[0]-start[0])**2+(point[1]-start[1])**2;
+            }
+            while(queue.data.length){
+                // 队列为广度优先算法
+                let [x,y]=queue.take();
+                // 栈为深度优先算法
+                // let [x,y]=queue.pop();
+                if(x===end[0] && y===end[1]){
+                    let path=[];
+                    while(x!==start[0] || y!==start[1]){
+                        path.push([x,y]);
+                        await sleep(10);
+                        ele.children[y*100+x].style.backgroundColor="red";
+                        [x,y]=table[y*100+x].point;
+                    }
+                    return path;
+                };
+                await insert(x-1,y,[x,y]);
+                await insert(x,y-1,[x,y]);
+                await insert(x,y+1,[x,y]);
+                await insert(x+1,y,[x,y]);
+
+                await insert(x-1,y-1,[x,y]);
+                await insert(x+1,y-1,[x,y]);
+                await insert(x+1,y+1,[x,y]);
+                await insert(x-1,y+1,[x,y]);
+            }
+            return null;
+        }
+    </script>
+</body>
+</html>
