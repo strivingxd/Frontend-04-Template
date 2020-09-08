@@ -30,38 +30,85 @@
     <button onclick="saveMap()">保存</botton>
     <script>
         // 取出最小数据的数据结构
-        class Sort{
-            constructor(data,compare){
-                this.data=data || [];
-                this.compare=compare || function(a,b){return a-b};
-            }
-            take(){
-                let min=this.data[0];
-                let minIndex=0;
-                for(let i=1;i<this.data.length;i++){
-                    if(this.compare(min,this.data[i])>0){
-                        min=this.data[i];
-                        minIndex=i;
-                    }
-                }
-                this.data[minIndex]=this.data[this.data.length-1];
-                this.data.pop();
-                return min;
-            }
-            give(item){
-                this.data.push(item);
-            }
-        }
-        
-        // 二叉堆实现取出最小数据的数据结构；
         // class Sort{
         //     constructor(data,compare){
         //         this.data=data || [];
         //         this.compare=compare || function(a,b){return a-b};
         //     }
-            
-
+        //     take(){
+        //         let min=this.data[0];
+        //         let minIndex=0;
+        //         for(let i=1;i<this.data.length;i++){
+        //             if(this.compare(min,this.data[i])>0){
+        //                 min=this.data[i];
+        //                 minIndex=i;
+        //             }
+        //         }
+        //         this.data[minIndex]=this.data[this.data.length-1];
+        //         this.data.pop();
+        //         return min;
+        //     }
+        //     give(item){
+        //         this.data.push(item);
+        //     }
         // }
+        
+        // 二叉堆实现取出最小数据的数据结构；
+        class Sort{
+            constructor(data,compare){
+                this.data=data || [];
+                this.compare=compare || function(a,b){return a-b};
+            }
+             getLeft(i){
+                 return 2*i+1;
+             }
+             getRight(i){
+                 return 2*i+2;
+             }
+             getParent(i){
+                 return Math.floor((i-1)/2);
+             }
+             isEmpty(){
+                 return this.size()===0;
+             }
+             take(){
+                 if(this.isEmpty()) return null;
+                 let min=this.data[0];
+                 this.data[0]=this.data[this.data.length-1];
+                 this.data.pop();
+                 this.heapify(0);
+                 return min;
+             }
+             give(item){
+                this.data.push(item);
+                this.popUp(this.size()-1);
+             }
+             size(){
+                 return this.data.length;
+             }
+
+             popUp(i){
+                 let pid=this.getParent(i);
+                 if(pid>=0 && this.compare(this.data[pid],this.data[i])>0){
+                     [this.data[pid],this.data[i]]=[this.data[i],this.data[pid]];
+                     return this.popUp(pid);
+                 }
+             }
+             heapify(i){
+                let left = this.getLeft(i);
+                let right = this.getRight(i);
+                let small = i;
+                if(left < this.size() && this.compare(this.data[left], this.data[i])<0)
+                    small = left;
+                if(right < this.size() && this.compare(this.data[right], this.data[small])<0)
+                    small = right;
+                if(small != i){
+                    [this.data[i],this.data[small]]=[this.data[small],this.data[i]];
+                    this.heapify(small);
+                }
+             }  
+
+        }
         // 将路径保存到localStorage
         function saveMap(){
             localStorage.setItem('dots',JSON.stringify(dots));
