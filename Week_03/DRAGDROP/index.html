@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>dragdrop</title>
+</head>
+<body>
+    <div id="container">文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字</div>
+    <div id="drag" style="display:inline-block;height: 100px;width:100px;background-color:pink;"></div>
+    <script>
+        let drag=document.getElementById('drag');
+        let baseX=0;
+        let baseY=0;
+        drag.addEventListener('mousedown',event=>{
+            let mouseX=event.clientX;
+            let mouseY=event.clientY;
+            let move = event =>{
+                // drag.style.transform = `translate(${baseX+event.clientX-mouseX}px,${baseY+event.clientY-mouseY}px)`;
+                let nearest=findNearest(event.clientX,event.clientY);
+                nearest.insertNode(drag);
+            }
+            let up = event => {
+                baseX=baseX+event.clientX-mouseX;
+                baseY=baseY+event.clientY-mouseY;
+                document.removeEventListener('mousemove',move);
+                document.removeEventListener('mouseup',up);
+            }
+            document.addEventListener('mousemove',move);
+            document.addEventListener('mouseup',up);
+        })
+        let ranges=[];
+        let container=document.getElementById("container")
+        for(let i=0;i<container.childNodes[0].textContent.length;i++){
+            let range=document.createRange();
+            range.setStart(container.childNodes[0],i);
+            range.setEnd(container.childNodes[0],i);
+            // console.log(range.getBoundingClientRect())
+            ranges.push(range);
+        }
+
+        function findNearest(x,y){
+            let min=Infinity;
+            let nearest=null;
+            for(let range of ranges){
+                let rect=range.getBoundingClientRect();
+                let distant=(x-rect.x)**2+(y-rect.y)**2;
+                if(distant<min){
+                    min=distant;
+                    nearest=range;
+                }
+            }
+            return nearest;
+        }
+        document.addEventListener("selectstart",e=>e.preventDefault())
+    </script>
+</body>
+</html>
