@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        
+        // 字符对应数字
+        let dict = {
+            "0": 0,
+            "1": 1,
+            "2": 2,
+            "3": 3,
+            "4": 4,
+            "5": 5,
+            "6": 6,
+            "7": 7,
+            "8": 8,
+            "9": 9,
+            "A": 10,
+            "a": 10,
+            "B": 11,
+            "b": 11,
+            "c": 12,
+            "C": 12,
+            "d": 13,
+            "D": 13,
+            "E": 14,
+            "e": 14,
+            "F": 15,
+            "f": 15,
+        }
+        // 其他进制字符串转为10进制
+        function getNumber(str, type){
+            let num=0;
+            for(let i=str.length-1,pow=0;i>=0;i--,pow++){
+                num+=(dict[str[i]]*Math.pow(type,pow));
+            }
+            return num;
+        }
+        // 判断字符串是否可转为数字
+        function stringToNumber(str){
+            let pattern2 = /^0b[0-1]+$/g;
+            let pattern8 = /^0[0-7]+$/g;
+            let pattern16 = /^0x[0-9|a-f|A-F]+$/g;
+            let pattern10 = /^[1-9]\d+$/g;
+            if(pattern2.test(str)){
+                return getNumber(str.substr(2),2);
+            }else if(pattern8.test(str)){
+                return getNumber(str.substr(1),8);
+            }else if(pattern16.test(str)){
+                return getNumber(str.substr(2),16);
+            }else if(pattern10.test(str)){
+                return getNumber(str,10);
+            }
+            return NaN;
+        }
+
+        // 数字转为字符串
+        let dict2 = {
+            0: "0",
+            1: "1",
+            2: "2",
+            3: "3",
+            4: "4",
+            5: "5",
+            6: "6",
+            7: "7",
+            8: "8",
+            9: "9",
+            10: "A",
+            11: "B",
+            12: "C",
+            13: "D",
+            14: "E",
+            15: "F",
+        }
+
+        function NumberToString(num, base){
+            if(!base || base===10) return `${num}`;
+            let list=[];
+            let curNum = num;
+            while(curNum>0){
+                list.unshift(dict2[curNum%base]);
+                curNum = Math.floor(curNum/base);
+            }
+            if(base === 2) list.unshift('0b');
+            else if(base === 8) list.unshift('0');
+            else if(base === 16) list.unshift('0x');
+            return list.join('');
+        }
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>state_machine</title>
+</head>
+<body>
+    <script>
+        function match2(str){
+            let findA=false,findB=false,findC=false,findD=false,findE=false;
+            for(let char of str){
+                if(char == "a"){
+                    findA=true;
+                }else if(findA && char=='b'){
+                    findB=true;
+                }else if(findB && char=='c'){
+                    findC=true;
+                }else if(findC && char=='d'){
+                    findD=true;
+                }else if(findD && char=='e'){
+                    findE=true;
+                }else if(findE && char=='f'){
+                    return true;
+                }else{
+                    findA=false;
+                    findB=false;
+                    findC=false;
+                    findD=false;
+                    findE=false;
+                }
+            }
+            return false;
+        }
+    </script>
+</body>
+</html> -->
+
+<html lang="en">
+<head>
+    <title>state_machine</title>
+    <style>
+        body #name {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="name">hello</h1>
+    <span>world</span>
+    <h2>list1</h2>
+</body>
+</html>
